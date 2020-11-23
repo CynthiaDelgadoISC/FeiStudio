@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btnRegresar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regresar"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/btnRevertir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Revertir"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guardar"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imgFoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <Button
+        android:id="@+id/btnConvertir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Convertir"/>
+    <SeekBar
+        android:id="@+id/skBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="200"
+        android:min="0"
+        android:progress="100"
+        android:progressTint="#D6D6D6"
+        />
+
+
+
+</LinearLayout>
