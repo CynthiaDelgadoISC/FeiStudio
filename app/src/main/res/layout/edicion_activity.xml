@@ -51,11 +51,27 @@
         android:progress="100"
         android:progressTint="#D6D6D6"
         />
-    <Button
-        android:id="@+id/btnConvertir"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/lblPorcentaje"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <RadioGroup
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Convertir"/>
+        android:orientation="horizontal">
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vertical"
+            android:layout_weight="1"
+            android:checked="true"/>
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Horizontal"
+            android:layout_weight="1"/>
+    </RadioGroup>
+
 
 
 

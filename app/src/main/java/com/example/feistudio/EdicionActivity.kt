@@ -1,27 +1,31 @@
 package com.example.feistudio
 
 import android.app.Activity
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
+import androidx.core.graphics.*
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.scale
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class EdicionActivity:Activity() {
 
     private lateinit var imgFoto: ImageView
-    private lateinit var btnConvertir: Button
     private lateinit var recView: RecyclerView
+    private  lateinit var skBar:SeekBar
+    private lateinit var txtValor:TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edicion_activity)
         imgFoto = findViewById(R.id.imgFoto)
-
+        skBar=findViewById(R.id.skBar)
+        txtValor=findViewById(R.id.lblPorcentaje)
+        skBar.isEnabled=false
+        var opcion:String="brightness"
         val data = Uri.parse(intent.getStringExtra("pathFoto"))
 
         imgFoto.setImageURI(data)
@@ -29,19 +33,67 @@ class EdicionActivity:Activity() {
 
         recView = findViewById(R.id.recViewFiltros)
 
-        val filtros = listOf<Filtro>(Filtro("Blanco y Negro"),
+        val filtros = listOf<Filtro>(
                 Filtro("Negativo"),
+                Filtro("Escala Grises"),
                 Filtro("Brillo"),
                 Filtro("Gaussian Blur"),
                 Filtro("Embossing"),
-                Filtro("Smoothing")
+                Filtro("Smoothing"),
+                Filtro("Blanco y Negro"),
+                Filtro("Sepian"),
+                Filtro("Espejo"),
+                Filtro("Wave"),
+                Filtro("Hue")
         )
 
         val adaptador = AdaptadorFiltros(filtros as MutableList<Filtro>, data){
             Toast.makeText(applicationContext, "Se selecciono ${it.nombre}",
                     Toast.LENGTH_SHORT).show()
             // convertir foto
-            // ....
+            when(it.nombre){
+                "Blanco y Negro" ->{
+                    imgFoto.setImageBitmap(black_withe(imgFoto.drawable.toBitmap()))
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Negativo"->{
+                    imgFoto.setImageBitmap(invertirNegativo(imgFoto.drawable.toBitmap()))
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Escala Grises" ->{
+                    imgFoto.setImageBitmap(grayScale(imgFoto.drawable.toBitmap()))
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Brillo"->{
+                    opcion="brightness"
+                    skBar.isEnabled=true
+                    skBar.progress=100
+                }
+                "Hue"->{
+                    opcion="applyHueFilter"
+                    skBar.isEnabled=true
+                    skBar.progress=100
+                }
+                "Sepian" ->{
+                    imgFoto.setImageBitmap(sepian(imgFoto.drawable.toBitmap()))
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Espejo" ->{
+                    imgFoto.setImageBitmap(espejo(imgFoto.drawable.toBitmap()))
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Wave" ->{
+                    imgFoto.setImageBitmap(wave(imgFoto.drawable.toBitmap()))
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+            }
+
 
         }
 
@@ -49,15 +101,253 @@ class EdicionActivity:Activity() {
 
         recView.adapter = adaptador
 
-        btnConvertir=findViewById(R.id.btnConvertir)
 
-        btnConvertir.setOnClickListener {
-            // bitmap= AppCompatResources.getDrawable(this,R.drawable.hola) as BitmapDrawable
-            //imgFoto.setImageBitmap( gaussianBlur(imagen.drawable.toBitmap()))
-            Toast.makeText(applicationContext, "Imagen convertida",
-                Toast.LENGTH_SHORT).show()
-        }
+        skBar.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
+                    //hace un llamado a la perilla cuando se arrastra
+                    override fun onProgressChanged(seekBar: SeekBar,
+                                                   progress: Int, fromUser: Boolean) {
+                        txtValor.text=(progress-100).toString()
+
+                    }
+                    //hace un llamado  cuando se toca la perilla
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                    //hace un llamado  cuando se detiene la perilla
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {
+                        val valor=""+txtValor.text
+                        when(opcion) {
+                            "brightness"->imgFoto.setImageBitmap(brightness(imgFoto.drawable.toBitmap(), valor.toInt()))
+                            "applyHueFilter"->imgFoto.setImageBitmap(applyHueFilter(imgFoto.drawable.toBitmap(), valor.toInt()))
+                        }
+                        skBar.progress=100
+                    }
+                })
 
     }
 
+
+
+    fun invertirNegativo(src:Bitmap): Bitmap{
+        val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
+        // color info
+        var A: Int
+        var R: Int
+        var G: Int
+        var B: Int
+        var pixelColor: Int
+        //Tamaño de la imagen
+        val height: Int = src.height
+        val width: Int = src.width
+        //Obtiene y convierte cada pixel de la imagen
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                //Obtiene un pixel
+                pixelColor = src.getPixel(x, y)
+                // Guarda el alpha
+                A = Color.alpha(pixelColor)
+                // Invierte el byte a R/G/B
+                R = 255 - Color.red(pixelColor)
+                G = 255 - Color.green(pixelColor)
+                B = 255 - Color.blue(pixelColor)
+                // Ingresa el pixel invertido en el bitmap final
+                bmOut.setPixel(x, y, Color.argb(A, R, G, B))
+            }
+        }
+        // Retorna el bitmap final
+        return bmOut
+    }
+    fun grayScale(src:Bitmap): Bitmap{
+        val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
+        // color info
+        var A: Int
+        var R: Int
+        var G: Int
+        var B: Int
+        var c:Int
+        var pixel: Int
+        //Tamaño de la imagen
+        val height: Int = src.height
+        val width: Int = src.width
+        //Obtiene y convierte cada pixel de la imagen
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                //Obtiene un pixel
+                pixel = src.getPixel(x, y)
+                // Guarda el alpha
+                A = Color.alpha(pixel)
+                // Invierte el byte a R/G/B
+                R = Color.red(pixel)
+                G = Color.green(pixel)
+                B = Color.blue(pixel)
+                c=(0.299 * R + 0.587 * G + 0.114 * B).toInt()
+                // Ingresa el pixel invertido en el bitmap final
+                bmOut.setPixel(x, y, Color.argb(A, c, c, c))
+            }
+        }
+        // Retorna el bitmap final
+        return bmOut
+    }
+    fun black_withe(src: Bitmap): Bitmap {
+        val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
+        var pixel: Int
+        //Tamaño de la imagen
+        val height: Int = src.height
+        val width: Int = src.width
+        //Obtiene y convierte cada pixel de la imagen
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                //Obtiene un pixel
+                pixel = src.getPixel(x, y)
+                if((pixel.red + pixel.green + pixel.blue / 3) <=127)
+                    bmOut.setPixel(x, y, Color.argb(pixel.alpha, 0, 0, 0))
+                else
+                    bmOut.setPixel(x, y, Color.argb(pixel.alpha, 255, 255, 255))
+
+            }
+        }
+        // Retorna el bitmap final
+        return bmOut
+    }
+    fun brightness(src: Bitmap, value:Int):Bitmap{
+        val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
+        // color info
+        var A: Int
+        var R: Int
+        var G: Int
+        var B: Int
+        var pixel: Int
+        //Tamaño de la imagen
+        val height: Int = src.height
+        val width: Int = src.width
+        //Obtiene y convierte cada pixel de la imagen
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                //Obtiene un pixel
+                pixel = src.getPixel(x, y)
+                // Guarda el alpha
+                A = Color.alpha(pixel)
+                // Invierte el byte a R/G/B
+                R = Color.red(pixel)
+                G = Color.green(pixel)
+                B = Color.blue(pixel)
+                //Incrementa el brillo en cada color
+                R += value;
+                if(R > 255) { R = 255; }
+                else if(R < 0) { R = 0; }
+                G += value;
+                if(G > 255) { G = 255; }
+                else if(G < 0) { G = 0; }
+                B += value;
+                if(B > 255) { B = 255; }
+                else if(B < 0) { B = 0; }
+                // Ingresa el pixel invertido en el bitmap final
+                bmOut.setPixel(x, y, Color.argb(A, R, G, B))
+            }
+        }
+        // Retorna el bitmap final
+        return bmOut
+    }
+    fun applyHueFilter(source: Bitmap, level: Int): Bitmap? {
+        // get image size
+        val width = source.width
+        val height = source.height
+        val pixels = IntArray(width * height)
+        val HSV = FloatArray(3)
+        // get pixel array from source
+        source.getPixels(pixels, 0, width, 0, 0, width, height)
+        var index = 0
+        // iteration through pixels
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                // get current index in 2D-matrix
+                index = y * width + x
+                // convert to HSV
+                Color.colorToHSV(pixels[index], HSV)
+                // increase Saturation level
+                HSV[0] *= (level).toFloat()
+                HSV[0] = Math.max((0).toFloat(), Math.min(HSV[0],(360.0).toFloat()))
+                // take color back
+                pixels[index] = pixels[index] or Color.HSVToColor(HSV)
+            }
+        }
+        // output bitmap
+        val bmOut = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bmOut.setPixels(pixels, 0, width, 0, 0, width, height)
+        return bmOut
+    }
+    fun sepian(src: Bitmap):Bitmap{
+        val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
+        var nR: Int
+        var nG: Int
+        var nB: Int
+        var pixel: Int
+        //Tamaño de la imagen
+        val height: Int = src.height
+        val width: Int = src.width
+        //Obtiene y convierte cada pixel de la imagen
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                //Obtiene un pixel
+                pixel = src.getPixel(x, y)
+                nR= (0.393*pixel.red + 0.769*pixel.green + 0.189*pixel.blue).toInt()
+                nG= (0.349*pixel.red + 0.686*pixel.green + 0.168*pixel.blue).toInt()
+                nB= (0.272*pixel.red + 0.534*pixel.green + 0.131*pixel.blue).toInt()
+                //checa la condicion
+                if (nR > 255)
+                    nR = 255
+                if (nG > 255)
+                    nG = 255
+                if (nB > 255)
+                    nB = 255
+                // Ingresa el pixel invertido en el bitmap final
+                bmOut.setPixel(x, y, Color.argb(pixel.alpha, nR, nG, nB))
+            }
+        }
+        // Retorna el bitmap final
+        return bmOut
+    }
+    fun espejo(src:Bitmap): Bitmap{
+        val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
+        var pixelColor: Int
+        //Tamaño de la imagen
+        val height: Int = src.height
+        val width: Int = src.width
+        //Obtiene y convierte cada pixel de la imagen
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                //Obtiene un pixel
+                pixelColor = src.getPixel(width-x-1, y)
+                // Ingresa el pixel invertido en el bitmap final
+                bmOut.setPixel(x, y, Color.argb(pixelColor.alpha, pixelColor.red, pixelColor.green, pixelColor.blue))
+            }
+        }
+        // Retorna el bitmap final
+        return bmOut
+    }
+    fun wave(src: Bitmap):Bitmap {
+        val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
+        var pixel: Int
+        var el: Int = 0
+        var k: Int
+        val height: Int = src.height
+        val width: Int = src.width
+        for (y in 0 until height) {
+            el = y
+            for (x in 0 until width) {
+                pixel = src.getPixel(x, y)
+                k = x
+                el = (y + 20.0 * Math.sin(2.0 * Math.PI * x / 200.0)).toInt()
+                k = (x + 20.0 * Math.sin(2.0 * Math.PI * y / 200.0)).toInt()
+                /*if (el<height && el>0)
+                bmOut.setPixel(x, el ,argb(A, R, G, B))
+                else
+                    bmOut.setPixel(x, y ,argb(A, R, G, B))*/
+                if (k<width && k>0)
+                    bmOut.setPixel(k, y , Color.argb(pixel.alpha, pixel.red, pixel.green, pixel.blue))
+                else
+                    bmOut.setPixel(x, y , Color.argb(pixel.alpha, pixel.red, pixel.green, pixel.blue))
+            }
+        }
+        return bmOut
+    }
 }
