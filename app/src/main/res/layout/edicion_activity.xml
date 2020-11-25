@@ -30,14 +30,18 @@
 
     <ImageView
         android:id="@+id/imgFoto"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_weight="1"
         />
-    <Button
-        android:id="@+id/btnConvertir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Convertir"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recViewFiltros"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <SeekBar
         android:id="@+id/skBar"
         android:layout_width="match_parent"
@@ -47,6 +51,12 @@
         android:progress="100"
         android:progressTint="#D6D6D6"
         />
+    <Button
+        android:id="@+id/btnConvertir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Convertir"/>
+
 
 
 

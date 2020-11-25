@@ -3,12 +3,17 @@ package com.example.feistudio
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import java.io.Serializable
 
 class MainActivity : AppCompatActivity() {
     private var REQUEST_IMAGE_GALLERY=101
@@ -65,7 +70,29 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode== Activity.RESULT_OK && requestCode==REQUEST_IMAGE_GALLERY){
             val i=Intent(this, EdicionActivity::class.java)
-            i.putExtra("foto",data?.data)
+            //Tomar el nombre de la foto seleccionada
+           val filePath = data?.data.toString()
+            /* val selectedImage: Uri? = data?.data
+            println(" Data " + data)
+            println(" Data.data " + data?.data)
+            val wholeID = DocumentsContract.getDocumentId(selectedImage)
+            val id = wholeID.split(":".toRegex()).toTypedArray()[1]
+
+            val column = arrayOf(MediaStore.Images.Media.DATA)
+            val sel = MediaStore.Images.Media._ID + "=?"
+
+            val cursor: Cursor? = this.contentResolver?.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,column, sel, arrayOf(id), null)
+            var filePath = ""
+            val columnIndex = cursor?.getColumnIndex(column[0])
+            if (cursor != null) {
+                if(cursor.moveToFirst())
+                    filePath = cursor.getString(columnIndex!!)
+            }
+            println(filePath)*/
+            i.putExtra("pathFoto",filePath)
+
+            startActivity(i)
+
             //imagen.setImageURI(data?.data)
         }
     }
