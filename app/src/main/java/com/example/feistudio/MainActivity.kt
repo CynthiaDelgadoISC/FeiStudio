@@ -28,9 +28,12 @@ class MainActivity : AppCompatActivity() {
             //Verifa que version de android se tiene
             if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
                 //Pregunta si tiene permiso
-                if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED){
+                if(
+                        ActivityCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED ||
+                        ActivityCompat.checkSelfPermission(this,android.Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED
+                ){
                     //Pide permiso
-                    val permisoGaleria= arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    val permisoGaleria= arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     requestPermissions(permisoGaleria,REQUEST_PERMISSION_CODE)
                 }
                 else{

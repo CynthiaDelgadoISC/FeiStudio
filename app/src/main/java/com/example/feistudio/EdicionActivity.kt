@@ -6,11 +6,18 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.widget.*
 import androidx.core.graphics.*
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EdicionActivity:Activity() {
 
@@ -18,17 +25,31 @@ class EdicionActivity:Activity() {
     private lateinit var recView: RecyclerView
     private  lateinit var skBar:SeekBar
     private lateinit var txtValor:TextView
+
+    private lateinit var currentPhotoPath: String
+    private lateinit var btnGuardar: Button
+    private lateinit var btnRevertir: Button
+    private var finalBitmap: Bitmap? = null
+    private var originalBitmap: Bitmap? = null
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edicion_activity)
         imgFoto = findViewById(R.id.imgFoto)
         skBar=findViewById(R.id.skBar)
         txtValor=findViewById(R.id.lblPorcentaje)
+        btnGuardar = findViewById(R.id.btnGuardar)
+        btnRevertir = findViewById(R.id.btnRevertir)
+
         skBar.isEnabled=false
         var opcion:String="brightness"
         val data = Uri.parse(intent.getStringExtra("pathFoto"))
 
-        imgFoto.setImageURI(data)
+        imgFoto.setImageURI(data).also {
+            originalBitmap = imgFoto.drawable.toBitmap()
+        }
 
 
         recView = findViewById(R.id.recViewFiltros)
@@ -53,17 +74,20 @@ class EdicionActivity:Activity() {
             // convertir foto
             when(it.nombre){
                 "Blanco y Negro" ->{
-                    imgFoto.setImageBitmap(black_withe(imgFoto.drawable.toBitmap()))
+                    finalBitmap = black_withe((imgFoto.drawable.toBitmap()))
+                    imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled=false
                     skBar.progress=100
                 }
                 "Negativo"->{
-                    imgFoto.setImageBitmap(invertirNegativo(imgFoto.drawable.toBitmap()))
+                    finalBitmap = invertirNegativo(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled=false
                     skBar.progress=100
                 }
                 "Escala Grises" ->{
-                    imgFoto.setImageBitmap(grayScale(imgFoto.drawable.toBitmap()))
+                    finalBitmap = grayScale(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled=false
                     skBar.progress=100
                 }
@@ -78,17 +102,20 @@ class EdicionActivity:Activity() {
                     skBar.progress=100
                 }
                 "Sepian" ->{
-                    imgFoto.setImageBitmap(sepian(imgFoto.drawable.toBitmap()))
+                    finalBitmap = sepian(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled=false
                     skBar.progress=100
                 }
                 "Espejo" ->{
-                    imgFoto.setImageBitmap(espejo(imgFoto.drawable.toBitmap()))
+                    finalBitmap = espejo(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled=false
                     skBar.progress=100
                 }
                 "Wave" ->{
-                    imgFoto.setImageBitmap(wave(imgFoto.drawable.toBitmap()))
+                    finalBitmap = wave(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled=false
                     skBar.progress=100
                 }
@@ -116,16 +143,54 @@ class EdicionActivity:Activity() {
                     override fun onStopTrackingTouch(seekBar: SeekBar) {
                         val valor=""+txtValor.text
                         when(opcion) {
-                            "brightness"->imgFoto.setImageBitmap(brightness(imgFoto.drawable.toBitmap(), valor.toInt()))
-                            "applyHueFilter"->imgFoto.setImageBitmap(applyHueFilter(imgFoto.drawable.toBitmap(), valor.toInt()))
+                            "brightness"-> {
+                                finalBitmap = brightness(imgFoto.drawable.toBitmap(), valor.toInt())
+                                imgFoto.setImageBitmap(finalBitmap)
+                            }
+                            "applyHueFilter" -> {
+                                finalBitmap = applyHueFilter(imgFoto.drawable.toBitmap(), valor.toInt())
+                                imgFoto.setImageBitmap(finalBitmap)
+                            }
                         }
                         skBar.progress=100
                     }
                 })
 
+
+        btnGuardar.setOnClickListener {
+            val bytes = ByteArrayOutputStream()
+            finalBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+            val photoFile: File? = try {
+                createImageFile()
+            } catch (ex: IOException){
+                Toast.makeText(this, "Problema al guardar la foto: ${ex}", Toast.LENGTH_SHORT).show()
+                null
+            }
+            if(photoFile != null){
+                MediaStore.Images.Media.insertImage(this.contentResolver, finalBitmap, currentPhotoPath,"FeiStudio")
+                Toast.makeText(this, "Imagen guardada!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnRevertir.setOnClickListener{
+            imgFoto.setImageBitmap(originalBitmap)
+        }
     }
 
-
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+                "JPEG_${timeStamp}_", /* prefix */
+                ".jpg", /* tipo */
+                storageDir /* directorio en el que se guardara, en este caso en el directorio de Pictures */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
 
     fun invertirNegativo(src:Bitmap): Bitmap{
         val bmOut = Bitmap.createBitmap(src.width, src.height, src.config)
