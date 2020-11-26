@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Color.argb
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -60,6 +61,7 @@ class EdicionActivity:Activity() {
                 Filtro("Brillo"),
                 Filtro("Gaussian Blur"),
                 Filtro("Embossing"),
+                Filtro("Sharpen"),
                 Filtro("Smoothing"),
                 Filtro("Blanco y Negro"),
                 Filtro("Sepian"),
@@ -115,6 +117,24 @@ class EdicionActivity:Activity() {
                 }
                 "Wave" ->{
                     finalBitmap = wave(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Sharpen"->{
+                    finalBitmap = sharpen(imgFoto.drawable.toBitmap(),11.0)
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Gaussian Blur" ->{
+                    finalBitmap = gaussianBlur(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled=false
+                    skBar.progress=100
+                }
+                "Smoothing" ->{
+                    finalBitmap = smooth(imgFoto.drawable.toBitmap(),5.0)
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled=false
                     skBar.progress=100
@@ -402,17 +422,40 @@ class EdicionActivity:Activity() {
                 pixel = src.getPixel(x, y)
                 k = x
                 el = (y + 20.0 * Math.sin(2.0 * Math.PI * x / 200.0)).toInt()
-                k = (x + 20.0 * Math.sin(2.0 * Math.PI * y / 200.0)).toInt()
-                /*if (el<height && el>0)
-                bmOut.setPixel(x, el ,argb(A, R, G, B))
+                //k = (x + 20.0 * Math.sin(2.0 * Math.PI * y / 200.0)).toInt()
+                if (el<height && el>0)
+                bmOut.setPixel(x, el ,argb(pixel.alpha, pixel.red, pixel.green, pixel.blue))
                 else
-                    bmOut.setPixel(x, y ,argb(A, R, G, B))*/
-                if (k<width && k>0)
+                    bmOut.setPixel(x, y ,argb(pixel.alpha, pixel.red, pixel.green, pixel.blue))
+               /* if (k<width && k>0)
                     bmOut.setPixel(k, y , Color.argb(pixel.alpha, pixel.red, pixel.green, pixel.blue))
                 else
-                    bmOut.setPixel(x, y , Color.argb(pixel.alpha, pixel.red, pixel.green, pixel.blue))
+                    bmOut.setPixel(x, y , Color.argb(pixel.alpha, pixel.red, pixel.green, pixel.blue))*/
             }
         }
         return bmOut
+    }
+    fun sharpen(src: Bitmap, weight:Double): Bitmap? {
+        val SharpConfig = arrayOf(doubleArrayOf(0.0, -2.0, 0.0), doubleArrayOf(-2.0, weight, -2.0), doubleArrayOf(0.0, -2.0, 0.0))
+        val convMatrix = ConvolutionMatrix(3)
+        convMatrix.applyConfig(SharpConfig)
+        convMatrix.Factor = weight - 8
+        return convMatrix.computeConvolution3x3(src, convMatrix)
+    }
+    fun gaussianBlur(src: Bitmap): Bitmap? {
+        val GaussianBlurConfig = arrayOf(doubleArrayOf(1.0, 2.0, 1.0), doubleArrayOf(2.0, 4.0, 2.0), doubleArrayOf(1.0, 2.0, 1.0))
+        val convMatrix = ConvolutionMatrix(3)
+        convMatrix.applyConfig(GaussianBlurConfig)
+        convMatrix.Factor = 16.0
+        convMatrix.Offset = 0.0
+        return convMatrix.computeConvolution3x3(src, convMatrix)
+    }
+    fun smooth(src: Bitmap, value: Double): Bitmap? {
+        val convMatrix = ConvolutionMatrix(3)
+        convMatrix.setAll(1.0)
+        convMatrix.Matrix[1][1] = value
+        convMatrix.Factor = value + 8
+        convMatrix.Offset = 1.0
+        return convMatrix.computeConvolution3x3(src, convMatrix)
     }
 }
