@@ -1,6 +1,7 @@
 package com.example.feistudio
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -33,6 +34,8 @@ class EdicionActivity:Activity() {
     private var finalBitmap: Bitmap? = null
     private var originalBitmap: Bitmap? = null
 
+    private var opcFlag: Boolean = false
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,11 +49,22 @@ class EdicionActivity:Activity() {
 
         skBar.isEnabled=false
         var opcion:String="brightness"
-        val data = Uri.parse(intent.getStringExtra("pathFoto"))
+        var data: Uri? = null
 
-        imgFoto.setImageURI(data).also {
-            originalBitmap = imgFoto.drawable.toBitmap()
+        if(intent.getStringExtra("pathFoto") != null && intent.getStringExtra("pathFoto") != ""){
+            data = Uri.parse(intent.getStringExtra("pathFoto"))
+            imgFoto.setImageURI(data).also {
+                originalBitmap = imgFoto.drawable.toBitmap()
+            }
+        } else {
+            val data2 = intent.extras?.get("FotoCamara") as Intent
+            originalBitmap = data2.extras?.get("data") as Bitmap
+            imgFoto.setImageBitmap(originalBitmap)
         }
+
+
+
+
 
 
         recView = findViewById(R.id.recViewFiltros)
@@ -70,7 +84,7 @@ class EdicionActivity:Activity() {
                 Filtro("Hue")
         )
 
-        val adaptador = AdaptadorFiltros(filtros as MutableList<Filtro>, data){
+        val adaptador = AdaptadorFiltros(filtros as MutableList<Filtro>, originalBitmap!!){
             Toast.makeText(applicationContext, "Se selecciono ${it.nombre}",
                     Toast.LENGTH_SHORT).show()
             // convertir foto
