@@ -6,10 +6,12 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Color.argb
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.core.graphics.*
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +39,7 @@ class EdicionActivity:Activity() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edicion_activity)
@@ -109,12 +112,16 @@ class EdicionActivity:Activity() {
                 "Brillo" -> {
                     opcion = "brightness"
                     skBar.isEnabled = true
-                    skBar.progress = 100
+                    skBar.max=200
+                    skBar.min=0
+                    skBar.progress=100
                 }
                 "Contraste" -> {
                     opcion = "contrast"
                     skBar.isEnabled = true
                     skBar.progress = 0
+                    skBar.max=100
+                    skBar.min=0
                 }
                 "Gamma" -> {
                     finalBitmap = gamma(imgFoto.drawable.toBitmap(), 1.8,1.8,1.8)
@@ -149,7 +156,9 @@ class EdicionActivity:Activity() {
                 "Hue" -> {
                     opcion = "applyHueFilter"
                     skBar.isEnabled = true
-                    skBar.progress = 100
+                    skBar.progress = 0
+                    skBar.max=100
+                    skBar.min=0
                 }
                 "Sepian" -> {
                     finalBitmap = sepian(imgFoto.drawable.toBitmap())
@@ -182,7 +191,7 @@ class EdicionActivity:Activity() {
                     skBar.progress = 100
                 }
                 "Smoothing" -> {
-                    finalBitmap = smooth(imgFoto.drawable.toBitmap(), 5.0)
+                    finalBitmap = smooth(imgFoto.drawable.toBitmap(), 1.0)
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
                     skBar.progress = 100
@@ -202,7 +211,10 @@ class EdicionActivity:Activity() {
                     //hace un llamado a la perilla cuando se arrastra
                     override fun onProgressChanged(seekBar: SeekBar,
                                                    progress: Int, fromUser: Boolean) {
+                        if(opcion=="brightness")
                         txtValor.text = (progress - 100).toString()
+                        else
+                            txtValor.text=progress.toString()
 
                     }
 
@@ -216,17 +228,20 @@ class EdicionActivity:Activity() {
                             "brightness" -> {
                                 finalBitmap = brightness(imgFoto.drawable.toBitmap(), valor.toInt())
                                 imgFoto.setImageBitmap(finalBitmap)
+                                skBar.progress = 100
                             }
                             "applyHueFilter" -> {
                                 finalBitmap = applyHueFilter(imgFoto.drawable.toBitmap(), valor.toInt())
                                 imgFoto.setImageBitmap(finalBitmap)
+                                skBar.progress = 0
                             }
                             "contrast" -> {
-                                finalBitmap = contrast(imgFoto.drawable.toBitmap(), (valor).toInt() + 100)
+                                finalBitmap = contrast(imgFoto.drawable.toBitmap(), (valor).toInt())
                                 imgFoto.setImageBitmap(finalBitmap)
+                                skBar.progress = 0
                             }
                         }
-                        skBar.progress = 100
+
                     }
                 })
 
