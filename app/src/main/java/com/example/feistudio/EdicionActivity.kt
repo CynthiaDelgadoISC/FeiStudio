@@ -74,11 +74,14 @@ class EdicionActivity:Activity() {
                 Filtro("Brillo"),
                 Filtro("Contraste"),
                 Filtro("Gamma"),
-                Filtro("Separacin de Colores"),
-                Filtro("Gaussian Blur"),
-                Filtro("Embossing"),
-                Filtro("Sharpen"),
+                Filtro("Separacion de Colores"),
                 Filtro("Smoothing"),
+                Filtro("Gaussian Blur"),
+                Filtro("Sharpen"),
+                Filtro("Mean Removal"),
+                Filtro("Embossing"),
+                Filtro("Edge Detection"),
+                Filtro("Zoom"),
                 Filtro("Blanco y Negro"),
                 Filtro("Sepian"),
                 Filtro("Espejo"),
@@ -95,19 +98,19 @@ class EdicionActivity:Activity() {
                     finalBitmap = black_withe((imgFoto.drawable.toBitmap()))
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Negativo" -> {
                     finalBitmap = invertirNegativo(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Escala Grises" -> {
                     finalBitmap = grayScale(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Brillo" -> {
                     opcion = "brightness"
@@ -127,7 +130,7 @@ class EdicionActivity:Activity() {
                     finalBitmap = gamma(imgFoto.drawable.toBitmap(), 1.8,1.8,1.8)
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Separacin de Colores" -> {
                     if(separacionColoresCount == null){
@@ -150,7 +153,7 @@ class EdicionActivity:Activity() {
                     }
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
 
                 }
                 "Hue" -> {
@@ -164,38 +167,51 @@ class EdicionActivity:Activity() {
                     finalBitmap = sepian(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Espejo" -> {
                     finalBitmap = espejo(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Wave" -> {
                     finalBitmap = wave(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Sharpen" -> {
                     finalBitmap = sharpen(imgFoto.drawable.toBitmap(), 11.0)
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Gaussian Blur" -> {
                     finalBitmap = gaussianBlur(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
                 "Smoothing" -> {
                     finalBitmap = smooth(imgFoto.drawable.toBitmap(), 1.0)
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
-                    skBar.progress = 100
+                    skBar.progress = 0
                 }
+                "Mean Removal" -> {
+                    finalBitmap = meanRemoval(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled = false
+                    skBar.progress = 0
+                }
+                "Embossing" -> {
+                    finalBitmap = embossing(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled = false
+                    skBar.progress = 0
+                }
+
             }
 
 
@@ -628,6 +644,22 @@ class EdicionActivity:Activity() {
         convMatrix.Matrix[1][1] = value
         convMatrix.Factor = value + 8
         convMatrix.Offset = 1.0
+        return convMatrix.computeConvolution3x3(src, convMatrix)
+    }
+    fun meanRemoval(src: Bitmap): Bitmap? {
+        val MeanRemovalConfig = arrayOf(doubleArrayOf(-1.0, -1.0, -1.0), doubleArrayOf(-1.0, 9.0, -1.0), doubleArrayOf(-1.0, -1.0, -1.0))
+        val convMatrix = ConvolutionMatrix(3)
+        convMatrix.applyConfig(MeanRemovalConfig)
+        convMatrix.Factor = 1.0
+        convMatrix.Offset = 0.0
+        return convMatrix.computeConvolution3x3(src, convMatrix)
+    }
+    fun embossing(src: Bitmap): Bitmap? {
+        val embossingConfig = arrayOf(doubleArrayOf(-1.0, 0.0, -1.0), doubleArrayOf(0.0, 4.0, 0.0), doubleArrayOf(-1.0, 0.0, -1.0))
+        val convMatrix = ConvolutionMatrix(3)
+        convMatrix.applyConfig(embossingConfig)
+        convMatrix.Factor = 1.0
+        convMatrix.Offset = 127.0
         return convMatrix.computeConvolution3x3(src, convMatrix)
     }
 }
