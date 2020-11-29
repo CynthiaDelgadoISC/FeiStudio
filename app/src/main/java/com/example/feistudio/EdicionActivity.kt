@@ -90,8 +90,7 @@ class EdicionActivity:Activity() {
         )
 
         val adaptador = AdaptadorFiltros(filtros as MutableList<Filtro>, originalBitmap!!){
-            Toast.makeText(applicationContext, "Se selecciono ${it.nombre}",
-                    Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Se selecciono ${it.nombre}", Toast.LENGTH_SHORT).show()
             // convertir foto
             when(it.nombre){
                 "Blanco y Negro" -> {
@@ -132,22 +131,22 @@ class EdicionActivity:Activity() {
                     skBar.isEnabled = false
                     skBar.progress = 0
                 }
-                "Separacin de Colores" -> {
+                "Separacion de Colores" -> {
                     if(separacionColoresCount == null){
                         auxBitmap = imgFoto.drawable.toBitmap()
                         separacionColoresCount = 0
                     }
                     when(separacionColoresCount){
                         0 -> {
-                            finalBitmap = colorFilter(auxBitmap, 100.0,1.0,1.0)
+                            finalBitmap = colorFilter(auxBitmap, 100.0,0.0,0.0)
                             separacionColoresCount = separacionColoresCount!! + 1
                         }
                         1 -> {
-                            finalBitmap = colorFilter(auxBitmap, 1.0,100.0,1.0)
+                            finalBitmap = colorFilter(auxBitmap, 0.0,100.0,0.0)
                             separacionColoresCount = separacionColoresCount!! + 1
                         }
                         2 -> {
-                            finalBitmap = colorFilter(auxBitmap, 1.0,1.0,100.0)
+                            finalBitmap = colorFilter(auxBitmap, 0.0,0.0,100.0)
                             separacionColoresCount = 0
                         }
                     }
@@ -207,6 +206,20 @@ class EdicionActivity:Activity() {
                 }
                 "Embossing" -> {
                     finalBitmap = embossing(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled = false
+                    skBar.progress = 0
+                }
+                "Edge Detection" -> {
+                    finalBitmap = edgeDetection(imgFoto.drawable.toBitmap())
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled = false
+                    skBar.progress = 0
+                }
+                "Zoom" -> {
+                    val width = imgFoto.drawable.toBitmap().width
+                    val height = imgFoto.drawable.toBitmap().height
+                    finalBitmap = imgFoto.drawable.toBitmap().scale(width*2, height*2)
                     imgFoto.setImageBitmap(finalBitmap)
                     skBar.isEnabled = false
                     skBar.progress = 0
@@ -660,6 +673,15 @@ class EdicionActivity:Activity() {
         convMatrix.applyConfig(embossingConfig)
         convMatrix.Factor = 1.0
         convMatrix.Offset = 127.0
+        return convMatrix.computeConvolution3x3(src, convMatrix)
+    }
+    fun edgeDetection(src: Bitmap): Bitmap? {
+        val edgeDetectionConfig = arrayOf(doubleArrayOf(0.0,1.0,0.0), doubleArrayOf(1.0,-4.0,1.0), doubleArrayOf(0.0,1.0,0.0))
+        //val edgeDetectionConfig = arrayOf(doubleArrayOf(0.0,0.0,0.0), doubleArrayOf(-1.0,1.0,0.0), doubleArrayOf(0.0,0.0,0.0))
+        val convMatrix = ConvolutionMatrix(3)
+        convMatrix.applyConfig(edgeDetectionConfig)
+        convMatrix.Factor = 1.0
+        convMatrix.Offset = 0.0
         return convMatrix.computeConvolution3x3(src, convMatrix)
     }
 }
