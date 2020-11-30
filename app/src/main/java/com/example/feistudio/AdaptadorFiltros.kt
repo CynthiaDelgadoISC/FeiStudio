@@ -25,7 +25,61 @@ class AdaptadorFiltros(private val datos: MutableList<Filtro>,
 
         fun bindFiltro(filtro: Filtro){
             lblFiltro.text = filtro.nombre
-            imgFoto.setImageBitmap(bitmap.scale(70,70,false))
+            val bitmap = bitmap.scale(50,50,false)
+
+            when(filtro.nombre){
+                "Blanco y Negro" -> {
+                    imgFoto.setImageBitmap(Filter.black_withe(bitmap))
+                }
+                "Negativo" -> {
+                    imgFoto.setImageBitmap(Filter.invertirNegativo(bitmap))
+                }
+                "Escala Grises" -> {
+                    imgFoto.setImageBitmap(Filter.grayScale(bitmap))
+                }
+                "Brillo" -> {
+                    imgFoto.setImageBitmap(Filter.brightness(bitmap,50))
+                }
+                "Contraste" -> {
+                    imgFoto.setImageBitmap(Filter.contrast(bitmap,50))
+                }
+                "Gamma" -> {
+                    imgFoto.setImageBitmap(Filter.gamma(bitmap,1.8,1.8,1.8))
+                }
+                "Separacion de Colores" -> {
+                    imgFoto.setImageBitmap(Filter.colorFilter(bitmap,0.0,0.0,100.0))
+                }
+                "Hue" -> {
+                    imgFoto.setImageBitmap(Filter.applyHueFilter(bitmap,50))
+                }
+                "Sepian" -> {
+                    imgFoto.setImageBitmap(Filter.sepian(bitmap))
+                }
+                "Espejo" -> {
+                    imgFoto.setImageBitmap(Filter.espejo(bitmap))
+                }
+                "Wave" -> {
+                    imgFoto.setImageBitmap(Filter.wave(bitmap))
+                }
+                "Sharpen" -> {
+                    imgFoto.setImageBitmap(Filter.sharpen(bitmap,11.0))
+                }
+                "Gaussian Blur" -> {
+                    imgFoto.setImageBitmap(Filter.gaussianBlur(bitmap))
+                }
+                "Smoothing" -> {
+                    imgFoto.setImageBitmap(Filter.smooth(bitmap,1.0))
+                }
+                "Mean Removal" -> {
+                    imgFoto.setImageBitmap(Filter.meanRemoval(bitmap))
+                }
+                "Embossing" -> {
+                    imgFoto.setImageBitmap(Filter.embossing(bitmap))
+                }
+                "Edge Detection" -> {
+                    imgFoto.setImageBitmap(Filter.edgeDetection(bitmap))
+                }
+            }
         }
     }
 
