@@ -30,8 +30,9 @@ class EdicionActivity:Activity() {
     private lateinit var txtValor:TextView
 
     private lateinit var currentPhotoPath: String
-    private lateinit var btnGuardar: Button
-    private lateinit var btnRevertir: Button
+    private lateinit var btnGuardar: ImageButton
+    private lateinit var btnRevertir: ImageButton
+    private lateinit var btnRegresar: ImageButton
     private var finalBitmap: Bitmap? = null
     private var originalBitmap: Bitmap? = null
 
@@ -48,6 +49,7 @@ class EdicionActivity:Activity() {
         txtValor=findViewById(R.id.lblPorcentaje)
         btnGuardar = findViewById(R.id.btnGuardar)
         btnRevertir = findViewById(R.id.btnRevertir)
+        btnRegresar = findViewById(R.id.btnRegresar)
 
 
         skBar.isEnabled=false
@@ -292,6 +294,11 @@ class EdicionActivity:Activity() {
 
         btnRevertir.setOnClickListener{
             imgFoto.setImageBitmap(originalBitmap)
+        }
+        btnRegresar.setOnClickListener{
+            val i = Intent(this, MainActivity::class.java)
+            finish()
+            startActivity(i)
         }
     }
 

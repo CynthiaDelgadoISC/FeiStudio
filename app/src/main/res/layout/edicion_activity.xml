@@ -6,58 +6,74 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:background="#F3F3FD">
+        <ImageButton
             android:id="@+id/btnRegresar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Regresar"
-            android:layout_weight="1"/>
-        <Button
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            android:src="@drawable/regresar"/>
+        <ImageButton
             android:id="@+id/btnRevertir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Revertir"
-            android:layout_weight="1"/>
-        <Button
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            android:src="@drawable/revertir"/>
+
+        <ImageButton
             android:id="@+id/btnGuardar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Guardar"
-            android:layout_weight="1"/>
+            android:background="#00FFFFFF"
+            android:src="@drawable/guardar"/>
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imgFoto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:layout_margin="20dp"
-        android:layout_weight="1"
         />
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recViewFiltros"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#00083A"
+        android:paddingTop="5dp"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recViewFiltros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <SeekBar
+            android:id="@+id/skBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200"
+            android:min="0"
+            android:progress="100"
+            android:progressTint="#23FFEFEF"
+            android:progressBackgroundTint="#FFFFFF"
+            android:thumbTint="#FFFFFF"
+            android:paddingTop="20dp" />
+        <TextView
+            android:id="@+id/lblPorcentaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textColor="#F6F6F6"
+            android:gravity="center"/>
 
-    <SeekBar
-        android:id="@+id/skBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="200"
-        android:min="0"
-        android:progress="100"
-        android:progressTint="#D6D6D6"
-        />
-    <TextView
-        android:id="@+id/lblPorcentaje"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-
-
-
+    </LinearLayout>
 
 </LinearLayout>
