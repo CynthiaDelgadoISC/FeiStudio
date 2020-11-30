@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.graphics.drawable.AnimationDrawable
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +12,10 @@ import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import java.io.Serializable
 
@@ -22,12 +26,18 @@ class MainActivity : AppCompatActivity() {
     private var REQUEST_PERMISSION_CODE=100
     private var REQUEST_PERMISSION_CAMERA=102
     private val REQUEST_IMAGE_CAPTURE = 1
+    private  lateinit var animacion:AnimationDrawable
+    private lateinit var imglogo:ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val btnGaleria: Button=findViewById(R.id.btnGaleria)
-        val btnCamara: Button=findViewById(R.id.btnCamara)
+        val btnGaleria: ImageButton=findViewById(R.id.btnGaleria)
+        val btnCamara: ImageButton=findViewById(R.id.btnCamara)
+        imglogo=findViewById(R.id.imageView)
+        animacion=AppCompatResources.getDrawable(this, R.drawable.animacion_logo)as AnimationDrawable
+        imglogo.setImageDrawable(animacion)
+        animacion.start()
 
         btnGaleria.setOnClickListener {
             //Verifa que version de android se tiene
