@@ -47,7 +47,7 @@ class AdaptadorFiltros(private val datos: MutableList<Filtro>,
                     imgFoto.setImageBitmap(Filter.gamma(bitmap,1.8,1.8,1.8))
                 }
                 "Separacion de Colores" -> {
-                    imgFoto.setImageBitmap(Filter.colorFilter(bitmap,0.0,0.0,100.0))
+                    imgFoto.setImageBitmap(Filter.colorFilter(bitmap,2))
                 }
                 "Hue" -> {
                     imgFoto.setImageBitmap(Filter.applyHueFilter(bitmap,50))

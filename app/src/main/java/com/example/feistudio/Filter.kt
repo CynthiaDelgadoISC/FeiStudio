@@ -207,23 +207,21 @@ class Filter {
             return bmpOut
 
         }
-        fun colorFilter(src: Bitmap, red: Double, green: Double, blue: Double): Bitmap{
+        fun colorFilter(src: Bitmap, color: Int): Bitmap{
             val width = src.width
             val height = src.height
 
             val bmpOut = Bitmap.createBitmap(width, height, src.config)
-            var A: Int; var R: Int; var G: Int; var B: Int;
             var pixel: Int
 
             for(y in 0 until height){
                 for(x in 0 until width){
                     pixel = src.get(x, y)
-                    A = Color.alpha(pixel)
-                    R = (Color.red(pixel) * red).toInt()
-                    G = (Color.green(pixel) * green).toInt()
-                    B = (Color.blue(pixel) * blue).toInt()
-
-                    bmpOut.setPixel(x,y,Color.argb(A, R, G, B))
+                    when(color){
+                        0 ->  bmpOut.setPixel(x,y,Color.argb(pixel.alpha, pixel.red, 0, 0))
+                        1 ->  bmpOut.setPixel(x,y,Color.argb(pixel.alpha, 0, pixel.green, 0))
+                        2 ->  bmpOut.setPixel(x,y,Color.argb(pixel.alpha, 0, 0, pixel.blue))
+                    }
                 }
             }
 

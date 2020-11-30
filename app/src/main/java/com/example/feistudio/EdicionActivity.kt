@@ -56,7 +56,7 @@ class EdicionActivity:Activity() {
 
 
         skBar.isEnabled=false
-        var opcion:String="brightness"
+        var opcion:String="no"
         var data: Uri?
 
         if(intent.getStringExtra("pathFoto") != null && intent.getStringExtra("pathFoto") != ""){
@@ -154,15 +154,15 @@ class EdicionActivity:Activity() {
                     }
                     when (separacionColoresCount) {
                         0 -> {
-                            finalBitmap = Filter.colorFilter(auxBitmap, 100.0, 0.0, 0.0)
+                            finalBitmap = Filter.colorFilter(auxBitmap, 0)
                             separacionColoresCount = separacionColoresCount!! + 1
                         }
                         1 -> {
-                            finalBitmap = Filter.colorFilter(auxBitmap, 0.0, 100.0, 0.0)
+                            finalBitmap = Filter.colorFilter(auxBitmap, 1)
                             separacionColoresCount = separacionColoresCount!! + 1
                         }
                         2 -> {
-                            finalBitmap = Filter.colorFilter(auxBitmap, 0.0, 0.0, 100.0)
+                            finalBitmap = Filter.colorFilter(auxBitmap, 2)
                             separacionColoresCount = 0
                         }
                     }
@@ -250,11 +250,14 @@ class EdicionActivity:Activity() {
                     //hace un llamado a la perilla cuando se arrastra
                     override fun onProgressChanged(seekBar: SeekBar,
                                                    progress: Int, fromUser: Boolean) {
-                        if (opcion == "brightness")
-                            txtValor.text = (progress - 100).toString()
+                        if(skBar.isEnabled) {
+                            if (opcion == "brightness")
+                                txtValor.text = (progress - 100).toString()
+                            else
+                                txtValor.text = progress.toString()
+                        }
                         else
-                            txtValor.text = progress.toString()
-
+                            txtValor.text = ""
                     }
 
                     //hace un llamado  cuando se toca la perilla
