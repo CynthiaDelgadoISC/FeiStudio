@@ -3,6 +3,7 @@ package com.example.feistudio
 import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.core.graphics.*
+import kotlin.math.floor
 
 class Filter {
     companion object{
@@ -377,6 +378,75 @@ class Filter {
             convMatrix.Factor = 1.0
             convMatrix.Offset = 0.0
             return convMatrix.computeConvolution3x3(src, convMatrix)
+        }
+        fun zoom(bitmap: Bitmap, nWidth: Int, nHeight: Int): Bitmap{
+            var bTemp = bitmap.copy(bitmap.config,true)
+            var newBitmap = Bitmap.createBitmap(nWidth,nHeight,bitmap.config)
+
+            val nXFactor: Double = bTemp.width.toDouble()/nWidth
+            val nYFactor: Double = bTemp.height.toDouble()/nHeight
+
+            for(x in 0 until newBitmap.width-1){
+                for(y in 0 until newBitmap.height-1){
+                    var floor_x: Int = floor(x * nXFactor).toInt()
+                    var floor_y = floor(y * nYFactor).toInt()
+                    var ceil_x = floor_x + 1
+
+                    if (ceil_x >= bTemp.width) ceil_x = floor_x;
+                    var ceil_y = floor_y + 1;
+                    if (ceil_y >= bTemp.height) ceil_y = floor_y;
+
+                    var fraction_x = x * nXFactor - floor_x;
+                    var fraction_y = y * nYFactor - floor_y;
+                    var one_minus_x = 1.0 - fraction_x;
+                    var one_minus_y = 1.0 - fraction_y;
+
+
+
+                    var c1 = Color.rgb(
+                        Color.red(bTemp.getPixel(floor_x, floor_y)),
+                        Color.green(bTemp.getPixel(floor_x, floor_y)),
+                        Color.blue(bTemp.getPixel(floor_x, floor_y))
+                    )
+                    var c2 = Color.rgb(
+                        Color.red(bTemp.getPixel(ceil_x, floor_y)),
+                        Color.green(bTemp.getPixel(ceil_x, floor_y)),
+                        Color.blue(bTemp.getPixel(ceil_x, floor_y))
+                    )
+                    var c3 = Color.rgb(
+                        Color.red(bTemp.getPixel(floor_x, ceil_y)),
+                        Color.green(bTemp.getPixel(floor_x, ceil_y)),
+                        Color.blue(bTemp.getPixel(floor_x, ceil_y))
+                    )
+                    var c4 = Color.rgb(
+                        Color.red(bTemp.getPixel(ceil_x, ceil_y)),
+                        Color.green(bTemp.getPixel(ceil_x, ceil_y)),
+                        Color.blue(bTemp.getPixel(ceil_x, ceil_y))
+                    )
+
+                    //AZUL
+                    var b1 = (one_minus_x * c1.blue + fraction_x * c2.blue);
+                    var b2 = (one_minus_x * c3.blue + fraction_x * c4.blue);
+
+                    val blue = (one_minus_y * (b1) + fraction_y * (b2)).toInt();
+
+                    //VERDE
+                    b1 = (one_minus_x * c1.green + fraction_x * c2.green);
+                    b2 = (one_minus_x * c3.green + fraction_x * c4.green);
+
+                    val green = (one_minus_y * (b1) + fraction_y * (b2)).toInt();
+
+                    //ROJO
+                    b1 = (one_minus_x * c1.red + fraction_x * c2.red);
+                    b2 = (one_minus_x * c3.red + fraction_x * c4.red);
+
+                    val red = (one_minus_y * (b1) + fraction_y * (b2)).toInt();
+
+                    newBitmap.setPixel(x,y,Color.rgb(red,green,blue))
+                }
+            }
+
+            return newBitmap
         }
     }
 }

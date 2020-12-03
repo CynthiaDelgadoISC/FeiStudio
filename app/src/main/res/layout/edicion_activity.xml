@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="5dp"
-        android:background="#F3F3FD">
+        android:background="#F3F3FD"
+        >
         <ImageButton
             android:id="@+id/btnRegresar"
             android:layout_width="wrap_content"
@@ -38,10 +39,10 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imgFoto"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_margin="20dp"
+            android:id="@+id/imgFoto"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="20dp"
         />
 
     <LinearLayout

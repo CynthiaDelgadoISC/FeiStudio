@@ -79,6 +79,9 @@ class AdaptadorFiltros(private val datos: MutableList<Filtro>,
                 "Edge Detection" -> {
                     imgFoto.setImageBitmap(Filter.edgeDetection(bitmap))
                 }
+                "Zoom" -> {
+                    imgFoto.setImageBitmap(Filter.zoom(bitmap,80,100))
+                }
             }
         }
     }

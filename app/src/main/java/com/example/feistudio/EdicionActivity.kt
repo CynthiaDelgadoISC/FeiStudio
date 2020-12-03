@@ -233,6 +233,10 @@ class EdicionActivity:Activity() {
                     skBar.progress = 0
                 }
                 "Zoom" -> {
+                    finalBitmap = Filter.zoom(imgFoto.drawable.toBitmap(),600,1000)
+                    imgFoto.setImageBitmap(finalBitmap)
+                    skBar.isEnabled = false
+                    skBar.progress = 0
                 }
 
             }
