@@ -2,6 +2,7 @@ package com.example.feistudio
 
 import android.R.attr
 import android.R.attr.bitmap
+import android.R.attr.viewportHeight
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
@@ -12,10 +13,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.*
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.ByteArrayOutputStream
@@ -29,8 +32,16 @@ class EdicionActivity:Activity() {
 
     private lateinit var imgFoto: ImageView
     private lateinit var recView: RecyclerView
+    private  lateinit var lytTable: TableLayout
     private  lateinit var skBar:SeekBar
+    private  lateinit var skBarR:SeekBar
+    private  lateinit var skBarB:SeekBar
+    private  lateinit var skBarG:SeekBar
+
     private lateinit var txtValor:TextView
+    private lateinit var txtValorR:TextView
+    private lateinit var txtValorB:TextView
+    private lateinit var txtValorG:TextView
 
     private lateinit var currentPhotoPath: String
     private lateinit var btnGuardar: ImageButton
@@ -48,8 +59,15 @@ class EdicionActivity:Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edicion_activity)
         imgFoto = findViewById(R.id.imgFoto)
+        lytTable=findViewById(R.id.lyTable)
         skBar=findViewById(R.id.skBar)
+        skBarR=findViewById(R.id.skBarR)
+        skBarB=findViewById(R.id.skBarB)
+        skBarG=findViewById(R.id.skBarG)
         txtValor=findViewById(R.id.lblPorcentaje)
+        txtValorR=findViewById(R.id.lblR)
+        txtValorB=findViewById(R.id.lblB)
+        txtValorG=findViewById(R.id.lblG)
         btnGuardar = findViewById(R.id.btnGuardar)
         btnRevertir = findViewById(R.id.btnRevertir)
         btnRegresar = findViewById(R.id.btnRegresar)
@@ -108,28 +126,28 @@ class EdicionActivity:Activity() {
         val adaptador = AdaptadorFiltros(filtros as MutableList<Filtro>, originalBitmap!!){
             Toast.makeText(applicationContext, "Se selecciono ${it.nombre}", Toast.LENGTH_SHORT).show()
             // convertir foto
+            lytTable.visibility= View.GONE
+            skBar.isEnabled = false
+            skBar.visibility= View.GONE
+            skBar.progress = 0
+            txtValor.visibility=View.GONE
             when(it.nombre){
                 "Blanco y Negro" -> {
                     finalBitmap = Filter.black_withe((imgFoto.drawable.toBitmap()))
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Negativo" -> {
                     finalBitmap = Filter.invertirNegativo(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Escala Grises" -> {
                     finalBitmap = Filter.grayScale(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Brillo" -> {
                     opcion = "brightness"
                     skBar.isEnabled = true
+                    skBar.visibility= View.VISIBLE
                     skBar.max = 200
                     skBar.min = 0
                     skBar.progress = 100
@@ -137,15 +155,15 @@ class EdicionActivity:Activity() {
                 "Contraste" -> {
                     opcion = "contrast"
                     skBar.isEnabled = true
-                    skBar.progress = 0
-                    skBar.max = 100
+                    skBar.visibility= View.VISIBLE
+                    skBar.max = 200
                     skBar.min = 0
+                    skBar.progress = 100
                 }
                 "Gamma" -> {
                     finalBitmap = Filter.gamma(imgFoto.drawable.toBitmap(), 1.8, 1.8, 1.8)
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
+                    lytTable.visibility= View.VISIBLE
                 }
                 "Separacion de Colores" -> {
                     if (separacionColoresCount == null) {
@@ -167,13 +185,11 @@ class EdicionActivity:Activity() {
                         }
                     }
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
-
                 }
                 "Hue" -> {
-                    opcion = "applyHueFilter"
+                    opcion = "hue"
                     skBar.isEnabled = true
+                    skBar.visibility= View.VISIBLE
                     skBar.progress = 0
                     skBar.max = 100
                     skBar.min = 0
@@ -181,62 +197,42 @@ class EdicionActivity:Activity() {
                 "Sepian" -> {
                     finalBitmap = Filter.sepian(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Espejo" -> {
                     finalBitmap = Filter.espejo(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Wave" -> {
                     finalBitmap = Filter.wave(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Sharpen" -> {
                     finalBitmap = Filter.sharpen(imgFoto.drawable.toBitmap(), 11.0)
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Gaussian Blur" -> {
                     finalBitmap = Filter.gaussianBlur(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Smoothing" -> {
                     finalBitmap = Filter.smooth(imgFoto.drawable.toBitmap(), 1.0)
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Mean Removal" -> {
                     finalBitmap = Filter.meanRemoval(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Embossing" -> {
                     finalBitmap = Filter.embossing(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Edge Detection" -> {
                     finalBitmap = Filter.edgeDetection(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
                 "Zoom" -> {
                     finalBitmap = Filter.zoom(imgFoto.drawable.toBitmap(),600,1000)
                     imgFoto.setImageBitmap(finalBitmap)
-                    skBar.isEnabled = false
-                    skBar.progress = 0
                 }
 
             }
@@ -254,19 +250,20 @@ class EdicionActivity:Activity() {
                     //hace un llamado a la perilla cuando se arrastra
                     override fun onProgressChanged(seekBar: SeekBar,
                                                    progress: Int, fromUser: Boolean) {
-                        if(skBar.isEnabled) {
-                            if (opcion == "brightness")
-                                txtValor.text = (progress - 100).toString()
-                            else
+                        if(skBar.isVisible) {
+                            txtValor.visibility= View.VISIBLE
+                            txtValor.text="0"
+                            if (opcion == "hue")
                                 txtValor.text = progress.toString()
+                            else
+                                txtValor.text = (progress - 100).toString()
                         }
-                        else
-                            txtValor.text = ""
+                        else {
+                            txtValor.visibility= View.GONE
+                        }
                     }
-
                     //hace un llamado  cuando se toca la perilla
                     override fun onStartTrackingTouch(seekBar: SeekBar) {}
-
                     //hace un llamado  cuando se detiene la perilla
                     override fun onStopTrackingTouch(seekBar: SeekBar) {
                         val valor = "" + txtValor.text
@@ -276,7 +273,7 @@ class EdicionActivity:Activity() {
                                 imgFoto.setImageBitmap(finalBitmap)
                                 skBar.progress = 100
                             }
-                            "applyHueFilter" -> {
+                            "hue" -> {
                                 finalBitmap = Filter.applyHueFilter(imgFoto.drawable.toBitmap(), valor.toInt())
                                 imgFoto.setImageBitmap(finalBitmap)
                                 skBar.progress = 0
@@ -284,13 +281,65 @@ class EdicionActivity:Activity() {
                             "contrast" -> {
                                 finalBitmap = Filter.contrast(imgFoto.drawable.toBitmap(), (valor).toInt())
                                 imgFoto.setImageBitmap(finalBitmap)
-                                skBar.progress = 0
+                                skBar.progress = 100
                             }
                         }
-
                     }
                 })
-
+        skBarR.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
+                    //hace un llamado a la perilla cuando se arrastra
+                    override fun onProgressChanged(seekBar: SeekBar,
+                                                   progress: Int, fromUser: Boolean) {
+                        txtValorR.text = (progress.toFloat()/40.0).toString()
+                    }
+                    //hace un llamado  cuando se toca la perilla
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                    //hace un llamado  cuando se detiene la perilla
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {
+                        val valorR = "" + txtValorR.text
+                        val valorG = "" + txtValorG.text
+                        val valorB = "" + txtValorB.text
+                        finalBitmap = Filter.gamma(imgFoto.drawable.toBitmap(), valorR.toDouble(), valorG.toDouble(), valorB.toDouble())
+                        imgFoto.setImageBitmap(finalBitmap)
+                    }
+                })
+        skBarG.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
+                    //hace un llamado a la perilla cuando se arrastra
+                    override fun onProgressChanged(seekBar: SeekBar,
+                                                   progress: Int, fromUser: Boolean) {
+                        txtValorG.text = (progress.toFloat()/40.0).toString()
+                    }
+                    //hace un llamado  cuando se toca la perilla
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                    //hace un llamado  cuando se detiene la perilla
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {
+                        val valorR = "" + txtValorR.text
+                        val valorG = "" + txtValorG.text
+                        val valorB = "" + txtValorB.text
+                        finalBitmap = Filter.gamma(imgFoto.drawable.toBitmap(), valorR.toDouble(), valorG.toDouble(), valorB.toDouble())
+                        imgFoto.setImageBitmap(finalBitmap)
+                    }
+                })
+        skBarB.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
+                    //hace un llamado a la perilla cuando se arrastra
+                    override fun onProgressChanged(seekBar: SeekBar,
+                                                   progress: Int, fromUser: Boolean) {
+                        txtValorB.text = (progress.toFloat()/40.0).toString()
+                    }
+                    //hace un llamado  cuando se toca la perilla
+                    override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                    //hace un llamado  cuando se detiene la perilla
+                    override fun onStopTrackingTouch(seekBar: SeekBar) {
+                        val valorR = "" + txtValorR.text
+                        val valorG = "" + txtValorG.text
+                        val valorB = "" + txtValorB.text
+                        finalBitmap = Filter.gamma(imgFoto.drawable.toBitmap(), valorR.toDouble(), valorG.toDouble(), valorB.toDouble())
+                        imgFoto.setImageBitmap(finalBitmap)
+                    }
+                })
 
         btnGuardar.setOnClickListener {
             val bytes = ByteArrayOutputStream()

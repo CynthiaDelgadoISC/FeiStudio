@@ -129,17 +129,12 @@ class Filter {
         }
         fun contrast(source: Bitmap, value: Int): Bitmap{
             // size
-            if(value < 0){
-                return source
-            }
             val width = source.width
             val height = source.height
             val bmpOut = Bitmap.createBitmap(width, height, source.config)
             var A: Int; var R: Int; var G: Int; var B: Int;
             var pixel: Int
             val contrast = Math.pow(((100 + value) / 100f).toDouble(), 2.toDouble())
-            println("valor: ${value}")
-            println("contraste: ${contrast}")
             for(y in 0 until height){
                 for(x in 0 until width){
                     // obtenemos pixel
@@ -168,7 +163,6 @@ class Filter {
                     bmpOut.setPixel(x, y, Color.argb(A, R, G, B))
                 }
             }
-
             return bmpOut
         }
         fun gamma(src: Bitmap, red: Double, green: Double, blue: Double): Bitmap{
