@@ -33,7 +33,6 @@ class ZoomView: View {
     private var absoluteHeight = 0
     var offsetX = 0f
     var offsetY = 0f
-    var offsetHeight = 0f
     private var currentY = 0f
 
 
@@ -120,7 +119,6 @@ class ZoomView: View {
                 } else if (newheight < absoluteHeight) {
                     offsetY = (((absoluteHeight - newheight) / 2).toFloat())
                 }
-                offsetY = offsetY + offsetHeight
                 println("absoluteWidth: $absoluteWidth")
                 println("absoluteHeight: $absoluteHeight")
                 println("offsetX: ${offsetX.toFloat()}")
@@ -141,12 +139,11 @@ class ZoomView: View {
         return true
     }
 
-    fun setBitmap(bitmap: Bitmap, absWidth: Int, absHeight: Int, offset: Float){
+    fun setBitmap(bitmap: Bitmap, absWidth: Int, absHeight: Int){
         extraAuxBitmap = bitmap
         extraBitmap = bitmap
         absoluteWidth = absWidth
         absoluteHeight = absHeight
-        offsetHeight = offset
     }
 
 }

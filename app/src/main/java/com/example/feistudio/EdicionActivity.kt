@@ -140,18 +140,26 @@ class EdicionActivity:Activity() {
             txtValor.visibility=View.GONE
             when(it.nombre){
                 "Blanco y Negro" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.black_withe((imgFoto.drawable.toBitmap()))
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Negativo" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.invertirNegativo(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Escala Grises" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.grayScale(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Brillo" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     opcion = "brightness"
                     skBar.isEnabled = true
                     skBar.visibility= View.VISIBLE
@@ -160,6 +168,8 @@ class EdicionActivity:Activity() {
                     skBar.progress = 100
                 }
                 "Contraste" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     opcion = "contrast"
                     skBar.isEnabled = true
                     skBar.visibility= View.VISIBLE
@@ -168,11 +178,15 @@ class EdicionActivity:Activity() {
                     skBar.progress = 100
                 }
                 "Gamma" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.gamma(imgFoto.drawable.toBitmap(), 1.8, 1.8, 1.8)
                     imgFoto.setImageBitmap(finalBitmap)
                     lytTable.visibility= View.VISIBLE
                 }
                 "Separacion de Colores" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     if (separacionColoresCount == null) {
                         auxBitmap = imgFoto.drawable.toBitmap()
                         separacionColoresCount = 0
@@ -194,6 +208,10 @@ class EdicionActivity:Activity() {
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Hue" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     opcion = "hue"
                     skBar.isEnabled = true
                     skBar.visibility= View.VISIBLE
@@ -202,38 +220,56 @@ class EdicionActivity:Activity() {
                     skBar.min = 0
                 }
                 "Sepian" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.sepian(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Espejo" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.espejo(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Wave" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.wave(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Sharpen" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.sharpen(imgFoto.drawable.toBitmap(), 11.0)
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Gaussian Blur" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.gaussianBlur(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Smoothing" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.smooth(imgFoto.drawable.toBitmap(), 1.0)
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Mean Removal" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.meanRemoval(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Embossing" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.embossing(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Edge Detection" -> {
+                    imgFoto.visibility = ImageView.VISIBLE
+                    ctrZoom.visibility = ImageView.GONE
                     finalBitmap = Filter.edgeDetection(imgFoto.drawable.toBitmap())
                     imgFoto.setImageBitmap(finalBitmap)
                 }
@@ -256,8 +292,8 @@ class EdicionActivity:Activity() {
 
                     val metrics = DisplayMetrics()
                     windowManager.defaultDisplay.getMetrics(metrics)
-                    println(ctrZoom.y)
-                    ctrZoom.setBitmap(originalBitmap!!, metrics.widthPixels, 700, ctrZoom.y)
+                    val absHeight = resources.displayMetrics.density * 320 + 0.5f
+                    ctrZoom.setBitmap(originalBitmap!!, metrics.widthPixels, absHeight.toInt())
                 }
 
             }
