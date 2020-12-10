@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -43,6 +44,8 @@ class EdicionActivity:Activity() {
     private lateinit var txtValorB:TextView
     private lateinit var txtValorG:TextView
 
+    private lateinit var ctrZoom: ZoomView
+
     private lateinit var currentPhotoPath: String
     private lateinit var btnGuardar: ImageButton
     private lateinit var btnRevertir: ImageButton
@@ -52,7 +55,7 @@ class EdicionActivity:Activity() {
 
     private var separacionColoresCount: Int? = null
 
-
+    private var flagCamera: Boolean = false
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,21 +74,25 @@ class EdicionActivity:Activity() {
         btnGuardar = findViewById(R.id.btnGuardar)
         btnRevertir = findViewById(R.id.btnRevertir)
         btnRegresar = findViewById(R.id.btnRegresar)
+        ctrZoom = findViewById(R.id.ctrZoom)
 
+        var data2: Intent = Intent()
 
         skBar.isEnabled=false
         var opcion:String="no"
-        var data: Uri?
+        var data: Uri? = null
 
         if(intent.getStringExtra("pathFoto") != null && intent.getStringExtra("pathFoto") != ""){
             data = Uri.parse(intent.getStringExtra("pathFoto"))
             imgFoto.setImageURI(data).also {
                 originalBitmap = imgFoto.drawable.toBitmap()
             }
+            flagCamera = false
         } else {
-            val data2 = intent.extras?.get("FotoCamara") as Intent
+            data2 = intent.extras?.get("FotoCamara") as Intent
             originalBitmap = data2.extras?.get("data") as Bitmap
             imgFoto.setImageBitmap(originalBitmap)
+            flagCamera = true
         }
         var auxBitmap: Bitmap = originalBitmap!!
 
@@ -231,8 +238,26 @@ class EdicionActivity:Activity() {
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Zoom" -> {
-                    finalBitmap = Filter.zoom(imgFoto.drawable.toBitmap(),600,1000)
-                    imgFoto.setImageBitmap(finalBitmap)
+                    /*finalBitmap = Filter.zoom(imgFoto.drawable.toBitmap(),600,1000)
+                    imgFoto.setImageBitmap(finalBitmap)*/
+                    /*if(flagCamera){
+                        val i = Intent(this, ZoomActivity::class.java)
+                        i.putExtra("FotoCamara", data2)
+                        startActivity(i)
+                    } else {
+                        val i=Intent(this, ZoomActivity::class.java)
+                        //Tomar el nombre de la foto seleccionada
+                        val filePath = data.toString()
+                        i.putExtra("pathFoto",filePath)
+                        startActivity(i)
+                    }*/
+                    imgFoto.visibility = ImageView.GONE
+                    ctrZoom.visibility = ImageView.VISIBLE
+
+                    val metrics = DisplayMetrics()
+                    windowManager.defaultDisplay.getMetrics(metrics)
+                    println(ctrZoom.y)
+                    ctrZoom.setBitmap(originalBitmap!!, metrics.widthPixels, 700, ctrZoom.y)
                 }
 
             }
