@@ -32,6 +32,6 @@ class ZoomActivity: Activity() {
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
 
-        zoomView.setBitmap(bitmap, metrics.widthPixels, metrics.heightPixels, 400f)
+        zoomView.setBitmap(bitmap, metrics.widthPixels, metrics.heightPixels)
     }
 }
