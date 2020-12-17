@@ -86,27 +86,19 @@ class EdicionActivity:Activity() {
             data = Uri.parse(intent.getStringExtra("pathFoto"))
             imgFoto.setImageURI(data).also {
                 originalBitmap = imgFoto.drawable.toBitmap()
+                finalBitmap = originalBitmap
             }
             flagCamera = false
         } else {
             data2 = intent.extras?.get("FotoCamara") as Intent
             originalBitmap = data2.extras?.get("data") as Bitmap
+            finalBitmap = originalBitmap
             imgFoto.setImageBitmap(originalBitmap)
             flagCamera = true
         }
         var auxBitmap: Bitmap = originalBitmap!!
 
         recView = findViewById(R.id.recViewFiltros)
-
-        findViewById<LinearLayout>(R.id.fondo).background =
-                GradientDrawable(
-                        GradientDrawable.Orientation.TOP_BOTTOM,
-                        intArrayOf(
-                                Color.parseColor("#FFFFFF"),
-                                Color.parseColor("#E3E3E3"),
-                                colorFondo(originalBitmap!!)
-                        )
-                )
 
 
         val filtros = listOf<Filtro>(
@@ -274,26 +266,13 @@ class EdicionActivity:Activity() {
                     imgFoto.setImageBitmap(finalBitmap)
                 }
                 "Zoom" -> {
-                    /*finalBitmap = Filter.zoom(imgFoto.drawable.toBitmap(),600,1000)
-                    imgFoto.setImageBitmap(finalBitmap)*/
-                    /*if(flagCamera){
-                        val i = Intent(this, ZoomActivity::class.java)
-                        i.putExtra("FotoCamara", data2)
-                        startActivity(i)
-                    } else {
-                        val i=Intent(this, ZoomActivity::class.java)
-                        //Tomar el nombre de la foto seleccionada
-                        val filePath = data.toString()
-                        i.putExtra("pathFoto",filePath)
-                        startActivity(i)
-                    }*/
                     imgFoto.visibility = ImageView.GONE
                     ctrZoom.visibility = ImageView.VISIBLE
 
                     val metrics = DisplayMetrics()
                     windowManager.defaultDisplay.getMetrics(metrics)
                     val absHeight = resources.displayMetrics.density * 320 + 0.5f
-                    ctrZoom.setBitmap(originalBitmap!!, metrics.widthPixels, absHeight.toInt())
+                    ctrZoom.setBitmap(finalBitmap!!, metrics.widthPixels, absHeight.toInt())
                 }
 
             }
@@ -442,41 +421,6 @@ class EdicionActivity:Activity() {
         }
     }
 
-    private fun colorFondo(src: Bitmap): Int {
-        val width = src.width
-        val height = src.height
-        var A = 0
-        var R = 0
-        var G = 0
-        var B = 0
-        val pixelCount = width * height
-        val hasAlpha = src.hasAlpha()
-
-        val pixels = IntArray(pixelCount)
-
-        src.getPixels(pixels, 0, width, 0, 0, width, height)
-
-        for ( y in 0 until height){
-            for (x in 0 until width){
-                val color: Int = pixels.get(x + y) // x + y * width
-                //val color: Int = src.getPixel(x,y) // x + y * width
-
-                R += color shr 16 and 0xFF // Color.red
-
-                G += color shr 8 and 0xFF // Color.greed
-
-                B += color and 0xFF // Color.blue
-                if (hasAlpha) A += color ushr 24 // Color.alpha
-
-            }
-        }
-        return Color.argb(
-                if (hasAlpha) A / pixelCount else 255,
-                R / pixelCount,
-                G / pixelCount,
-                B / pixelCount
-        )
-    }
 
 
 }

@@ -33,8 +33,6 @@ class ZoomView: View {
     private var absoluteHeight = 0
     var offsetX = 0f
     var offsetY = 0f
-    private var currentY = 0f
-
 
 
     constructor(context: Context): super(context){
